@@ -43,6 +43,30 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup environment variables
+        run: |
+          if [ -f .env.example ]; then
+            cp .env.example .env
+            echo "✅ Copied .env.example to .env"
+          else
+            echo "# Database Configuration" > .env
+            echo "DB_HOST=localhost" >> .env
+            echo "DB_PORT=5432" >> .env
+            echo "DB_USERNAME=postgres" >> .env
+            echo "DB_PASSWORD=postgres" >> .env
+            echo "DB_NAME=lingora_test" >> .env
+            echo "" >> .env
+            echo "# JWT Configuration" >> .env
+            echo "JWT_EXPIRES_IN=7d" >> .env
+            echo "" >> .env
+            echo "# Application" >> .env
+            echo "NODE_ENV=test" >> .env
+            echo "✅ Created .env file with defaults"
+          fi
+
+      - name: Generate JWT secret
+        run: npm run generate:jwt-secret
+
       - name: Check code formatting
         run: npm run format:check
 
@@ -51,6 +75,16 @@ jobs:
 
       - name: Type check
         run: npm run type-check
+
+      - name: Run database migrations
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          DB_NAME: lingora_test
+          NODE_ENV: test
+        run: npm run migration:run
 
       - name: Run tests
         env:
@@ -74,15 +108,6 @@ jobs:
 
       - name: Build application
         run: npm run build
-
-      # Uncomment if you want to upload coverage to codecov
-      # - name: Upload coverage reports
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     file: ./coverage/lcov.info
-      #     flags: unittests
-      #     name: codecov-umbrella
-      #     fail_ci_if_error: false
 
   e2e:
     name: E2E Tests
@@ -116,6 +141,30 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Setup environment variables
+        run: |
+          if [ -f .env.example ]; then
+            cp .env.example .env
+            echo "✅ Copied .env.example to .env"
+          else
+            echo "# Database Configuration" > .env
+            echo "DB_HOST=localhost" >> .env
+            echo "DB_PORT=5432" >> .env
+            echo "DB_USERNAME=postgres" >> .env
+            echo "DB_PASSWORD=postgres" >> .env
+            echo "DB_NAME=lingora_test" >> .env
+            echo "" >> .env
+            echo "# JWT Configuration" >> .env
+            echo "JWT_EXPIRES_IN=7d" >> .env
+            echo "" >> .env
+            echo "# Application" >> .env
+            echo "NODE_ENV=test" >> .env
+            echo "✅ Created .env file with defaults"
+          fi
+
+      - name: Generate JWT secret
+        run: npm run generate:jwt-secret
 
       - name: Build application
         run: npm run build

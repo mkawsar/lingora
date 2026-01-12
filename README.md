@@ -29,7 +29,12 @@ cd lingora
 npm install
 ```
 
-3. Create a `.env` file in the root directory:
+3. Create a `.env` file from the example:
+```bash
+cp .env.example .env
+```
+
+Or create it manually with:
 ```env
 # Database Configuration
 DB_HOST=localhost
@@ -271,31 +276,40 @@ This project includes GitHub Actions workflows for continuous integration:
 
 On every push and pull request, the CI workflow will:
 
-1. **Code Formatting Check** - Verify all code follows Prettier formatting rules
+1. **Setup Environment** - Copy `.env.example` to `.env` and generate JWT secret
+   - Copies environment variables from `.env.example`
+   - Generates secure JWT_SECRET automatically
+   - Creates `.env` file if `.env.example` doesn't exist
+
+2. **Code Formatting Check** - Verify all code follows Prettier formatting rules
    - Command: `npm run format:check`
    - Fails if code is not properly formatted
    - Similar to Pint (PHP formatter)
 
-2. **Linter Check** - Run ESLint to ensure code quality and detect issues
+3. **Linter Check** - Run ESLint to ensure code quality and detect issues
    - Command: `npm run lint:check`
    - Detects unused variables and imports
    - Similar to PHPStan (PHP static analyzer)
    - Does not auto-fix (for CI validation)
 
-3. **Type Check** - Validate TypeScript types
+4. **Type Check** - Validate TypeScript types
    - Command: `npm run type-check`
    - Catches type errors before tests run
 
-4. **Unit Tests** - Run all unit tests with Jest
+5. **Database Migrations** - Run database migrations
+   - Command: `npm run migration:run`
+   - Sets up database schema before tests
+
+6. **Unit Tests** - Run all unit tests with Jest
    - Command: `npm run test`
 
-5. **Test Coverage** - Generate and report test coverage
+7. **Test Coverage** - Generate and report test coverage
    - Command: `npm run test:cov`
 
-6. **Build** - Verify the application builds successfully
+8. **Build** - Verify the application builds successfully
    - Command: `npm run build`
 
-7. **E2E Tests** - Run end-to-end tests against a test database
+9. **E2E Tests** - Run end-to-end tests against a test database
    - Command: `npm run test:e2e`
 
 The workflow file is located at `.github/workflows/ci.yml`
