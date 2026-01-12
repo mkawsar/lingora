@@ -12,7 +12,7 @@ A NestJS application with PostgreSQL database, TypeORM, and UUID-based primary k
 
 ## 📋 Prerequisites
 
-- Node.js (v20 or higher)
+- Node.js (LTS version - v20 or higher recommended)
 - PostgreSQL (v12 or higher)
 - npm or yarn
 
