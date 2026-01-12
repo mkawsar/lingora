@@ -204,6 +204,40 @@ npm run test:e2e
 npm run test:cov
 ```
 
+## 🔄 CI/CD
+
+This project includes GitHub Actions workflows for continuous integration:
+
+### Automated Testing
+
+On every push and pull request, the CI workflow will:
+
+1. **Lint Check** - Run ESLint to ensure code quality
+2. **Unit Tests** - Run all unit tests with Jest
+3. **Test Coverage** - Generate and report test coverage
+4. **Build** - Verify the application builds successfully
+5. **E2E Tests** - Run end-to-end tests against a test database
+
+The workflow file is located at `.github/workflows/ci.yml`
+
+### Running Tests Locally
+
+Before pushing, ensure all tests pass:
+
+```bash
+# Run linter
+npm run lint
+
+# Run tests
+npm run test
+
+# Run with coverage
+npm run test:cov
+
+# Run E2E tests (requires database)
+npm run test:e2e
+```
+
 ## 📦 Available Scripts
 
 - `npm run build` - Build the application
