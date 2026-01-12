@@ -100,6 +100,20 @@ npm run start:dev
 
 The application will be available at `http://localhost:3000`
 
+### API Documentation (Swagger)
+
+Once the application is running, you can access the Swagger UI at:
+
+```
+http://localhost:3000/api/docs
+```
+
+The Swagger documentation provides:
+- Interactive API explorer
+- Request/response schemas
+- Try-it-out functionality
+- API endpoint descriptions
+
 ### Production Mode
 
 ```bash
@@ -167,13 +181,15 @@ Global validation pipe is enabled with:
 
 ## 📝 API Endpoints
 
+All API endpoints are prefixed with `api/v1`.
+
 ### Users
 
-- `POST /users` - Create a new user
-- `GET /users` - Get all users
-- `GET /users/:id` - Get user by UUID
-- `PATCH /users/:id` - Update user by UUID
-- `DELETE /users/:id` - Delete user by UUID
+- `POST /api/v1/users` - Create a new user
+- `GET /api/v1/users` - Get all users
+- `GET /api/v1/users/:id` - Get user by UUID
+- `PATCH /api/v1/users/:id` - Update user by UUID
+- `DELETE /api/v1/users/:id` - Delete user by UUID
 
 ## 🧪 Testing
 

@@ -1,16 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserRepository } from './repositories/user.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   /**
    * Create a new user
@@ -18,8 +14,13 @@ export class UsersService {
    * Example: id will be "550e8400-e29b-41d4-a716-446655440000"
    */
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(createUserDto);
-    const savedUser = await this.userRepository.save(user);
+    // Check if email already exists
+    const emailExists = await this.userRepository.emailExists(createUserDto.email);
+    if (emailExists) {
+      throw new NotFoundException(`User with email ${createUserDto.email} already exists`);
+    }
+
+    const savedUser = await this.userRepository.create(createUserDto);
     
     // savedUser.id will be a UUID string like: "550e8400-e29b-41d4-a716-446655440000"
     console.log('Created user with UUID:', savedUser.id);
@@ -32,7 +33,7 @@ export class UsersService {
    * Returns array of users with UUID ids
    */
   async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+    return this.userRepository.findAll();
   }
 
   /**
@@ -40,7 +41,7 @@ export class UsersService {
    * UUID format: "550e8400-e29b-41d4-a716-446655440000"
    */
   async findOne(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne(id);
     
     if (!user) {
       throw new NotFoundException(`User with UUID ${id} not found`);
@@ -53,24 +54,34 @@ export class UsersService {
    * Update user by UUID
    */
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id); // This will throw if not found
-    
-    Object.assign(user, updateUserDto);
-    return this.userRepository.save(user);
+    return this.userRepository.update(id, updateUserDto);
   }
 
   /**
    * Delete user by UUID
    */
   async remove(id: string): Promise<void> {
-    const user = await this.findOne(id); // This will throw if not found
-    await this.userRepository.remove(user);
+    return this.userRepository.remove(id);
   }
 
   /**
-   * Find user by email (example of using other fields)
+   * Find user by email
    */
   async findByEmail(email: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { email } });
+    return this.userRepository.findByEmail(email);
+  }
+
+  /**
+   * Find users by admin status
+   */
+  async findByAdminStatus(isAdmin: boolean): Promise<User[]> {
+    return this.userRepository.findByAdminStatus(isAdmin);
+  }
+
+  /**
+   * Find users by guest status
+   */
+  async findByGuestStatus(isGuest: boolean): Promise<User[]> {
+    return this.userRepository.findByGuestStatus(isGuest);
   }
 }

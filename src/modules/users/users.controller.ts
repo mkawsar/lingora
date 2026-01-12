@@ -9,84 +9,95 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  /**
-   * POST /users
-   * Creates a new user with auto-generated UUID
-   * 
-   * Example request body:
-   * {
-   *   "name": "John Doe",
-   *   "email": "john@example.com",
-   *   "password": "password123",
-   *   "photo": "https://example.com/photo.jpg"
-   * }
-   * 
-   * Example response:
-   * {
-   *   "id": "550e8400-e29b-41d4-a716-446655440000",  // Auto-generated UUID
-   *   "name": "John Doe",
-   *   "email": "john@example.com",
-   *   "photo": "https://example.com/photo.jpg",
-   *   "isGuest": false,
-   *   "isAdmin": false,
-   *   "createdAt": "2024-01-15T10:30:00Z",
-   *   "updatedAt": "2024-01-15T10:30:00Z"
-   * }
-   */
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new user', description: 'Creates a new user with auto-generated UUID' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({
+    status: 201,
+    description: 'User successfully created',
+    type: UserResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request - validation failed' })
+  @ApiResponse({ status: 409, description: 'Conflict - email already exists' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  /**
-   * GET /users
-   * Returns all users with their UUIDs
-   */
   @Get()
+  @ApiOperation({ summary: 'Get all users', description: 'Returns a list of all users' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of users retrieved successfully',
+    type: [UserResponseDto],
+  })
   findAll() {
     return this.usersService.findAll();
   }
 
-  /**
-   * GET /users/:id
-   * Find user by UUID
-   * 
-   * Example: GET /users/550e8400-e29b-41d4-a716-446655440000
-   */
   @Get(':id')
+  @ApiOperation({ summary: 'Get user by ID', description: 'Returns a single user by UUID' })
+  @ApiParam({
+    name: 'id',
+    description: 'User UUID',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User found',
+    type: UserResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'User not found' })
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
-  /**
-   * PATCH /users/:id
-   * Update user by UUID
-   * 
-   * Example: PATCH /users/550e8400-e29b-41d4-a716-446655440000
-   * Body: { "name": "Jane Doe" }
-   */
   @Patch(':id')
+  @ApiOperation({ summary: 'Update user', description: 'Updates user information by UUID' })
+  @ApiParam({
+    name: 'id',
+    description: 'User UUID',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({
+    status: 200,
+    description: 'User updated successfully',
+    type: UserResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 400, description: 'Bad request - validation failed' })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
 
-  /**
-   * DELETE /users/:id
-   * Delete user by UUID
-   * 
-   * Example: DELETE /users/550e8400-e29b-41d4-a716-446655440000
-   */
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete user', description: 'Deletes a user by UUID' })
+  @ApiParam({
+    name: 'id',
+    description: 'User UUID',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({ status: 204, description: 'User deleted successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
