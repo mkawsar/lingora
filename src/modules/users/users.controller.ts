@@ -8,6 +8,8 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
+  Request,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -15,12 +17,14 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from "@nestjs/swagger";
 
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserResponseDto } from "./dto/user-response.dto";
 import { UsersService } from "./users.service";
+import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
 
 @ApiTags("users")
 @Controller("users")
@@ -116,5 +120,26 @@ export class UsersController {
   @ApiResponse({ status: 404, description: "User not found" })
   remove(@Param("id") id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Get("profile/me")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Get current user profile",
+    description:
+      "Returns the authenticated user's profile (requires JWT token)",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "User profile retrieved successfully",
+    type: UserResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized - invalid or missing token",
+  })
+  getProfile(@Request() req: { user: UserResponseDto }) {
+    return req.user;
   }
 }

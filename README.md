@@ -38,11 +38,37 @@ DB_USERNAME=postgres
 DB_PASSWORD=postgres
 DB_NAME=lingora
 
+# JWT Configuration
+JWT_SECRET=your-jwt-secret-key-here
+JWT_EXPIRES_IN=7d
+
 # Application
 NODE_ENV=development
 ```
 
-4. Create the PostgreSQL database:
+4. Generate and automatically update JWT secret:
+```bash
+npm run generate:jwt-secret
+```
+
+This command will:
+- Generate a cryptographically secure random 512-bit secret
+- **Automatically update** the `JWT_SECRET` in your `.env` file
+- Create `.env` file if it doesn't exist
+- Add `JWT_EXPIRES_IN=7d` if not present
+
+**Note:** The script will update existing `JWT_SECRET` or add it if missing.
+
+**Alternative methods to generate JWT_SECRET (manual):**
+```bash
+# Using Node.js (one-liner) - requires manual copy to .env
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+
+# Using OpenSSL - requires manual copy to .env
+openssl rand -hex 64
+```
+
+5. Create the PostgreSQL database:
 ```sql
 CREATE DATABASE lingora;
 ```
@@ -179,9 +205,24 @@ Global validation pipe is enabled with:
 - `forbidNonWhitelisted: true` - Throws error for unknown properties
 - `transform: true` - Automatically transforms payloads to DTO instances
 
+### JWT Authentication
+
+The application uses JWT (JSON Web Tokens) for authentication:
+- **Token Generation**: Login endpoint returns JWT access token
+- **Token Expiration**: Configurable via `JWT_EXPIRES_IN` (default: 7 days)
+- **Protected Routes**: Use `@UseGuards(JwtAuthGuard)` to protect endpoints
+- **Token Format**: Bearer token in `Authorization` header
+- **Token Payload**: Includes user ID, email, isGuest, and isAdmin flags
+
 ## 📝 API Endpoints
 
 All API endpoints are prefixed with `api/v1`.
+
+### Authentication
+
+- `POST /api/v1/auth/register` - Register a new user
+- `POST /api/v1/auth/register/guest` - Register a guest user
+- `POST /api/v1/auth/login` - Login and get JWT token
 
 ### Users
 
@@ -190,6 +231,24 @@ All API endpoints are prefixed with `api/v1`.
 - `GET /api/v1/users/:id` - Get user by UUID
 - `PATCH /api/v1/users/:id` - Update user by UUID
 - `DELETE /api/v1/users/:id` - Delete user by UUID
+- `GET /api/v1/users/profile/me` - Get current user profile (requires JWT token)
+
+### Authentication Flow
+
+1. **Register or Login** to get a JWT token:
+   ```bash
+   POST /api/v1/auth/login
+   {
+     "email": "user@example.com",
+     "password": "password123"
+   }
+   ```
+
+2. **Use the token** in protected endpoints:
+   ```bash
+   GET /api/v1/users/profile/me
+   Authorization: Bearer <your-jwt-token>
+   ```
 
 ## 🧪 Testing
 
@@ -330,6 +389,9 @@ The CI workflow will fail if:
 - `npm run migration:create` - Create an empty migration
 - `npm run migration:run` - Run pending migrations
 - `npm run migration:revert` - Revert the last migration
+
+### Utilities
+- `npm run generate:jwt-secret` - Generate and automatically update JWT_SECRET in .env file
 
 ## 🔧 Configuration
 
