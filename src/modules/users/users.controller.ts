@@ -24,7 +24,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserResponseDto } from "./dto/user-response.dto";
 import { UsersService } from "./users.service";
-import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
+import { JwtAuthGuard } from "@/common/guards";
 import { successResponse } from "@/common/utils/response.util";
 
 @ApiTags("users")

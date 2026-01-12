@@ -9,6 +9,13 @@ import { AuthService } from "./auth.service";
 import { User } from "@/modules/users/entities/user.entity";
 import { UserRepository } from "@/modules/users/repositories/user.repository";
 import { JwtStrategy } from "./strategies/jwt.strategy";
+import {
+  JwtAuthGuard,
+  OptionalJwtAuthGuard,
+  RealUserGuard,
+  GuestUserGuard,
+  AdminGuard,
+} from "@/common/guards";
 import jwtConfig from "@/config/jwt.config";
 
 @Module({
@@ -32,7 +39,23 @@ import jwtConfig from "@/config/jwt.config";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserRepository, JwtStrategy],
-  exports: [AuthService],
+  providers: [
+    AuthService,
+    UserRepository,
+    JwtStrategy,
+    JwtAuthGuard,
+    OptionalJwtAuthGuard,
+    RealUserGuard,
+    GuestUserGuard,
+    AdminGuard,
+  ],
+  exports: [
+    AuthService,
+    JwtAuthGuard,
+    OptionalJwtAuthGuard,
+    RealUserGuard,
+    GuestUserGuard,
+    AdminGuard,
+  ],
 })
 export class AuthModule {}
