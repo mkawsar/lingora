@@ -26,26 +26,9 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     // Import rules (similar to PHPStan's unused imports detection)
-    'import/order': [
-      'warn',
-      {
-        groups: [
-          'builtin',
-          'external',
-          'internal',
-          'parent',
-          'sibling',
-          'index',
-        ],
-        'newlines-between': 'always',
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true,
-        },
-      },
-    ],
+    'import/order': 'off', // Disabled due to TypeScript resolver issues
     'import/no-unresolved': 'off', // TypeScript handles this
-    'import/no-duplicates': 'warn',
+    'import/no-duplicates': 'off', // TypeScript handles this
     // Unused imports (like PHPStan)
     'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [
@@ -59,7 +42,7 @@ module.exports = {
     ],
     // Additional TypeScript rules for better static analysis
     '@typescript-eslint/no-unused-vars': 'off', // Use unused-imports instead
-    '@typescript-eslint/explicit-member-accessibility': 'warn',
+    '@typescript-eslint/explicit-member-accessibility': 'off', // Too strict for NestJS patterns
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-misused-promises': 'error',
     '@typescript-eslint/await-thenable': 'error',

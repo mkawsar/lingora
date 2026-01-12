@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import {
   Repository,
   DeepPartial,
@@ -6,8 +6,8 @@ import {
   FindOneOptions,
   ObjectLiteral,
 } from "typeorm";
+
 import { IBaseRepository } from "../interfaces/base-repository.interface";
-import { NotFoundException } from "@nestjs/common";
 
 /**
  * Base repository class implementing common CRUD operations
