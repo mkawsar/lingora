@@ -1,11 +1,20 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  UsePipes,
+} from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
 
 import { AuthService } from "./auth.service";
-import { RegisterDto } from "./dto/register.dto";
-import { LoginDto } from "./dto/login.dto";
+import { RegisterDto, RegisterSchema } from "./schemas/register.schema";
+import { LoginDto, LoginSchema } from "./schemas/login.schema";
 import { LoginResponseDto } from "./dto/login-response.dto";
 import { UserResponseDto } from "@/modules/users/dto/user-response.dto";
+import { successResponse } from "@/common/utils/response.util";
+import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -14,6 +23,7 @@ export class AuthController {
 
   @Post("register")
   @HttpCode(HttpStatus.CREATED)
+  @UsePipes(new ZodValidationPipe(RegisterSchema))
   @ApiOperation({
     summary: "Register a new user",
     description:
@@ -28,11 +38,17 @@ export class AuthController {
   @ApiResponse({ status: 400, description: "Bad request - validation failed" })
   @ApiResponse({ status: 409, description: "Conflict - email already exists" })
   async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
+    const user = await this.authService.register(registerDto);
+    return successResponse(
+      user,
+      "User registered successfully",
+      HttpStatus.CREATED,
+    );
   }
 
   @Post("register/guest")
   @HttpCode(HttpStatus.CREATED)
+  @UsePipes(new ZodValidationPipe(RegisterSchema))
   @ApiOperation({
     summary: "Register a guest user",
     description:
@@ -50,11 +66,17 @@ export class AuthController {
   @ApiResponse({ status: 400, description: "Bad request - validation failed" })
   @ApiResponse({ status: 409, description: "Conflict - email already exists" })
   async registerGuest(@Body() registerDto: Omit<RegisterDto, "isGuest">) {
-    return this.authService.registerGuest(registerDto);
+    const user = await this.authService.registerGuest(registerDto);
+    return successResponse(
+      user,
+      "Guest user registered successfully",
+      HttpStatus.CREATED,
+    );
   }
 
   @Post("login")
   @HttpCode(HttpStatus.OK)
+  @UsePipes(new ZodValidationPipe(LoginSchema))
   @ApiOperation({
     summary: "Login user",
     description: "Authenticate user with email and password",
@@ -71,6 +93,7 @@ export class AuthController {
   })
   @ApiResponse({ status: 400, description: "Bad request - validation failed" })
   async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+    const result = await this.authService.login(loginDto);
+    return successResponse(result, "Login successful", HttpStatus.OK);
   }
 }

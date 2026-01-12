@@ -1,8 +1,10 @@
-import { ValidationPipe } from "@nestjs/common";
+import { ValidationPipe, BadRequestException } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { ValidationError } from "class-validator";
 
 import { AppModule } from "./app.module";
+import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -27,11 +29,26 @@ async function bootstrap() {
     },
   });
 
+  // Global exception filter to format all errors as arrays
+  app.useGlobalFilters(new HttpExceptionFilter());
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+      stopAtFirstError: false,
+      validationError: {
+        target: false,
+        value: false,
+      },
+      exceptionFactory: (errors: ValidationError[]) => {
+        // Preserve ValidationError structure for field-level error formatting
+        return new BadRequestException(errors);
+      },
     }),
   );
 

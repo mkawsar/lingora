@@ -25,6 +25,7 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserResponseDto } from "./dto/user-response.dto";
 import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
+import { successResponse } from "@/common/utils/response.util";
 
 @ApiTags("users")
 @Controller("users")
@@ -46,7 +47,11 @@ export class UsersController {
   @ApiResponse({ status: 400, description: "Bad request - validation failed" })
   @ApiResponse({ status: 409, description: "Conflict - email already exists" })
   create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    return this.usersService
+      .create(createUserDto)
+      .then((user) =>
+        successResponse(user, "User created successfully", HttpStatus.CREATED),
+      );
   }
 
   @Get()
@@ -60,7 +65,9 @@ export class UsersController {
     type: [UserResponseDto],
   })
   findAll() {
-    return this.usersService.findAll();
+    return this.usersService
+      .findAll()
+      .then((users) => successResponse(users, "Users retrieved successfully"));
   }
 
   @Get(":id")
@@ -80,7 +87,9 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: "User not found" })
   findOne(@Param("id") id: string) {
-    return this.usersService.findOne(id);
+    return this.usersService
+      .findOne(id)
+      .then((user) => successResponse(user, "User retrieved successfully"));
   }
 
   @Patch(":id")
@@ -102,7 +111,9 @@ export class UsersController {
   @ApiResponse({ status: 404, description: "User not found" })
   @ApiResponse({ status: 400, description: "Bad request - validation failed" })
   update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+    return this.usersService
+      .update(id, updateUserDto)
+      .then((user) => successResponse(user, "User updated successfully"));
   }
 
   @Delete(":id")
@@ -140,6 +151,6 @@ export class UsersController {
     description: "Unauthorized - invalid or missing token",
   })
   getProfile(@Request() req: { user: UserResponseDto }) {
-    return req.user;
+    return successResponse(req.user, "Profile retrieved successfully");
   }
 }

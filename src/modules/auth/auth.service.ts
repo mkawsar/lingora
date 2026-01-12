@@ -23,27 +23,31 @@ export class AuthService {
 
   /**
    * Register a new user (regular or guest)
-   * @param registerDto - Registration data
+   * @param registerDto - Registration data (validated by DTO)
    * @returns Created user (without password)
    */
   async register(registerDto: RegisterDto): Promise<Omit<User, "password">> {
+    // Sanitize input (DTO validation ensures fields exist, but we trim for safety)
+    const name = (registerDto.name || "").trim();
+    const email = (registerDto.email || "").trim();
+    const password = (registerDto.password || "").trim();
+    const photo = registerDto.photo?.trim() || null;
+
     // Check if email already exists
-    const emailExists = await this.userRepository.emailExists(
-      registerDto.email,
-    );
+    const emailExists = await this.userRepository.emailExists(email);
     if (emailExists) {
-      throw new ConflictException(
-        `User with email ${registerDto.email} already exists`,
-      );
+      throw new ConflictException(`User with email ${email} already exists`);
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+    // Hash password (DTO validation ensures password is valid)
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user with hashed password
     const user = await this.userRepository.create({
-      ...registerDto,
+      name,
+      email,
       password: hashedPassword,
+      photo,
       isGuest: registerDto.isGuest ?? false, // Default to false if not provided
     });
 
