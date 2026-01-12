@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserRepository } from './repositories/user.repository';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { User } from "./entities/user.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { UserRepository } from "./repositories/user.repository";
 
 @Injectable()
 export class UsersService {
@@ -15,16 +15,20 @@ export class UsersService {
    */
   async create(createUserDto: CreateUserDto): Promise<User> {
     // Check if email already exists
-    const emailExists = await this.userRepository.emailExists(createUserDto.email);
+    const emailExists = await this.userRepository.emailExists(
+      createUserDto.email,
+    );
     if (emailExists) {
-      throw new NotFoundException(`User with email ${createUserDto.email} already exists`);
+      throw new NotFoundException(
+        `User with email ${createUserDto.email} already exists`,
+      );
     }
 
     const savedUser = await this.userRepository.create(createUserDto);
-    
+
     // savedUser.id will be a UUID string like: "550e8400-e29b-41d4-a716-446655440000"
-    console.log('Created user with UUID:', savedUser.id);
-    
+    console.log("Created user with UUID:", savedUser.id);
+
     return savedUser;
   }
 
@@ -42,11 +46,11 @@ export class UsersService {
    */
   async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findOne(id);
-    
+
     if (!user) {
       throw new NotFoundException(`User with UUID ${id} not found`);
     }
-    
+
     return user;
   }
 

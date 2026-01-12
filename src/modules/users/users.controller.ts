@@ -8,97 +8,112 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiParam,
   ApiBody,
-} from '@nestjs/swagger';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserResponseDto } from './dto/user-response.dto';
+} from "@nestjs/swagger";
+import { UsersService } from "./users.service";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { UserResponseDto } from "./dto/user-response.dto";
 
-@ApiTags('users')
-@Controller('users')
+@ApiTags("users")
+@Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new user', description: 'Creates a new user with auto-generated UUID' })
+  @ApiOperation({
+    summary: "Create a new user",
+    description: "Creates a new user with auto-generated UUID",
+  })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
     status: 201,
-    description: 'User successfully created',
+    description: "User successfully created",
     type: UserResponseDto,
   })
-  @ApiResponse({ status: 400, description: 'Bad request - validation failed' })
-  @ApiResponse({ status: 409, description: 'Conflict - email already exists' })
+  @ApiResponse({ status: 400, description: "Bad request - validation failed" })
+  @ApiResponse({ status: 409, description: "Conflict - email already exists" })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all users', description: 'Returns a list of all users' })
+  @ApiOperation({
+    summary: "Get all users",
+    description: "Returns a list of all users",
+  })
   @ApiResponse({
     status: 200,
-    description: 'List of users retrieved successfully',
+    description: "List of users retrieved successfully",
     type: [UserResponseDto],
   })
   findAll() {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get user by ID', description: 'Returns a single user by UUID' })
+  @Get(":id")
+  @ApiOperation({
+    summary: "Get user by ID",
+    description: "Returns a single user by UUID",
+  })
   @ApiParam({
-    name: 'id',
-    description: 'User UUID',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    name: "id",
+    description: "User UUID",
+    example: "550e8400-e29b-41d4-a716-446655440000",
   })
   @ApiResponse({
     status: 200,
-    description: 'User found',
+    description: "User found",
     type: UserResponseDto,
   })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  findOne(@Param('id') id: string) {
+  @ApiResponse({ status: 404, description: "User not found" })
+  findOne(@Param("id") id: string) {
     return this.usersService.findOne(id);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Update user', description: 'Updates user information by UUID' })
+  @Patch(":id")
+  @ApiOperation({
+    summary: "Update user",
+    description: "Updates user information by UUID",
+  })
   @ApiParam({
-    name: 'id',
-    description: 'User UUID',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    name: "id",
+    description: "User UUID",
+    example: "550e8400-e29b-41d4-a716-446655440000",
   })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({
     status: 200,
-    description: 'User updated successfully',
+    description: "User updated successfully",
     type: UserResponseDto,
   })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 400, description: 'Bad request - validation failed' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @ApiResponse({ status: 404, description: "User not found" })
+  @ApiResponse({ status: 400, description: "Bad request - validation failed" })
+  update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete user', description: 'Deletes a user by UUID' })
-  @ApiParam({
-    name: 'id',
-    description: 'User UUID',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+  @ApiOperation({
+    summary: "Delete user",
+    description: "Deletes a user by UUID",
   })
-  @ApiResponse({ status: 204, description: 'User deleted successfully' })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  remove(@Param('id') id: string) {
+  @ApiParam({
+    name: "id",
+    description: "User UUID",
+    example: "550e8400-e29b-41d4-a716-446655440000",
+  })
+  @ApiResponse({ status: 204, description: "User deleted successfully" })
+  @ApiResponse({ status: 404, description: "User not found" })
+  remove(@Param("id") id: string) {
     return this.usersService.remove(id);
   }
 }

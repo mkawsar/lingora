@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import databaseConfig from '@/config/db.config';
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import databaseConfig from "@/config/db.config";
 
 @Module({
   imports: [
@@ -9,7 +9,7 @@ import databaseConfig from '@/config/db.config';
       imports: [ConfigModule.forFeature(databaseConfig)],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        return configService.get('database');
+        return configService.get("database");
       },
     }),
   ],

@@ -1,22 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import {
   Repository,
   DeepPartial,
   FindManyOptions,
   FindOneOptions,
   ObjectLiteral,
-} from 'typeorm';
-import { IBaseRepository } from '../interfaces/base-repository.interface';
-import { NotFoundException } from '@nestjs/common';
+} from "typeorm";
+import { IBaseRepository } from "../interfaces/base-repository.interface";
+import { NotFoundException } from "@nestjs/common";
 
 /**
  * Base repository class implementing common CRUD operations
  * @template T - Entity type (must extend ObjectLiteral for TypeORM)
  */
 @Injectable()
-export abstract class BaseRepository<T extends ObjectLiteral>
-  implements IBaseRepository<T>
-{
+export abstract class BaseRepository<
+  T extends ObjectLiteral,
+> implements IBaseRepository<T> {
   constructor(protected readonly repository: Repository<T>) {}
 
   /**
@@ -64,7 +64,7 @@ export abstract class BaseRepository<T extends ObjectLiteral>
    */
   async update(id: string, entity: DeepPartial<T>): Promise<T> {
     const existingEntity = await this.findOne(id);
-    
+
     if (!existingEntity) {
       throw new NotFoundException(`Entity with ID ${id} not found`);
     }
@@ -78,7 +78,7 @@ export abstract class BaseRepository<T extends ObjectLiteral>
    */
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
-    
+
     if (!entity) {
       throw new NotFoundException(`Entity with ID ${id} not found`);
     }

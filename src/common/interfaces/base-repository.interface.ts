@@ -1,4 +1,4 @@
-import { DeepPartial, FindManyOptions, FindOneOptions } from 'typeorm';
+import { DeepPartial, FindManyOptions, FindOneOptions } from "typeorm";
 
 /**
  * Base repository interface for common CRUD operations

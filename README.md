@@ -208,25 +208,58 @@ npm run test:cov
 
 This project includes GitHub Actions workflows for continuous integration:
 
-### Automated Testing
+### Automated Checks
 
 On every push and pull request, the CI workflow will:
 
-1. **Lint Check** - Run ESLint to ensure code quality
-2. **Unit Tests** - Run all unit tests with Jest
-3. **Test Coverage** - Generate and report test coverage
-4. **Build** - Verify the application builds successfully
-5. **E2E Tests** - Run end-to-end tests against a test database
+1. **Code Formatting Check** - Verify all code follows Prettier formatting rules
+   - Command: `npm run format:check`
+   - Fails if code is not properly formatted
+   - Similar to Pint (PHP formatter)
+
+2. **Linter Check** - Run ESLint to ensure code quality and detect issues
+   - Command: `npm run lint:check`
+   - Detects unused variables and imports
+   - Similar to PHPStan (PHP static analyzer)
+   - Does not auto-fix (for CI validation)
+
+3. **Type Check** - Validate TypeScript types
+   - Command: `npm run type-check`
+   - Catches type errors before tests run
+
+4. **Unit Tests** - Run all unit tests with Jest
+   - Command: `npm run test`
+
+5. **Test Coverage** - Generate and report test coverage
+   - Command: `npm run test:cov`
+
+6. **Build** - Verify the application builds successfully
+   - Command: `npm run build`
+
+7. **E2E Tests** - Run end-to-end tests against a test database
+   - Command: `npm run test:e2e`
 
 The workflow file is located at `.github/workflows/ci.yml`
 
-### Running Tests Locally
+### Running Checks Locally
 
-Before pushing, ensure all tests pass:
+Before pushing, ensure all checks pass:
 
 ```bash
-# Run linter
+# Check code formatting (like Pint)
+npm run format:check
+
+# Auto-fix formatting issues
+npm run format
+
+# Check for unused variables and imports (like PHPStan)
+npm run lint:check
+
+# Auto-fix linting issues
 npm run lint
+
+# Check TypeScript types
+npm run type-check
 
 # Run tests
 npm run test
@@ -238,15 +271,61 @@ npm run test:cov
 npm run test:e2e
 ```
 
+### Pre-commit Checklist
+
+Before committing code, run:
+
+```bash
+# 1. Format code
+npm run format
+
+# 2. Fix linting issues (including unused variables)
+npm run lint
+
+# 3. Verify types
+npm run type-check
+
+# 4. Run tests
+npm run test
+
+# 5. Build to ensure everything compiles
+npm run build
+```
+
+### CI/CD Failure Prevention
+
+The CI workflow will fail if:
+- ❌ Code is not properly formatted
+- ❌ Unused variables or imports are detected
+- ❌ TypeScript type errors exist
+- ❌ Tests fail
+- ❌ Build fails
+
+**Tip**: Run `npm run format && npm run lint && npm run type-check && npm run test && npm run build` locally before pushing to avoid CI failures.
+
 ## 📦 Available Scripts
 
+### Development
 - `npm run build` - Build the application
 - `npm run start` - Start the application
 - `npm run start:dev` - Start in development mode (watch mode)
 - `npm run start:debug` - Start in debug mode
 - `npm run start:prod` - Start in production mode
-- `npm run lint` - Run ESLint
-- `npm run format` - Format code with Prettier
+
+### Code Quality
+- `npm run format` - Format code with Prettier (auto-fix)
+- `npm run format:check` - Check code formatting (CI-friendly, no auto-fix)
+- `npm run lint` - Run ESLint and auto-fix issues
+- `npm run lint:check` - Check for linting issues including unused variables/imports (CI-friendly, no auto-fix)
+- `npm run type-check` - Check TypeScript types without building
+
+### Testing
+- `npm run test` - Run unit tests
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:cov` - Run tests with coverage report
+- `npm run test:e2e` - Run end-to-end tests
+
+### Database Migrations
 - `npm run migration:generate` - Generate a new migration
 - `npm run migration:create` - Create an empty migration
 - `npm run migration:run` - Run pending migrations
