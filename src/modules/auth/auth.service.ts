@@ -8,8 +8,8 @@ import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
 
 import { UserRepository } from "@/modules/users/repositories/user.repository";
-import { RegisterDto } from "./dto/register.dto";
-import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./schemas/register.schema";
+import { LoginDto } from "./schemas/login.schema";
 import { User } from "@/modules/users/entities/user.entity";
 import { LoginResponseDto } from "./dto/login-response.dto";
 

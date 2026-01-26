@@ -17,6 +17,8 @@ export const RegisterSchema = z.object({
     .min(1, "Password is required")
     .min(6, "Password must be at least 6 characters long")
     .trim(),
+  photo: z.string().url("Photo must be a valid URL").optional(),
+  isGuest: z.boolean().optional(),
 });
 
 /**

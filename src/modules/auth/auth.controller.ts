@@ -1,12 +1,23 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   HttpCode,
   HttpStatus,
   UsePipes,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+} from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/common/guards";
+import { CurrentUser } from "@/common/decorators/user.decorator";
+import { User } from "@/modules/users/entities/user.entity";
 
 import { AuthService } from "./auth.service";
 import { RegisterDto, RegisterSchema } from "./schemas/register.schema";
@@ -95,5 +106,30 @@ export class AuthController {
   async login(@Body() loginDto: LoginDto) {
     const result = await this.authService.login(loginDto);
     return successResponse(result, "Login successful", HttpStatus.OK);
+  }
+
+  @Get("profile")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Get current user profile",
+    description: "Get the authenticated user's profile data",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Profile retrieved successfully",
+    type: UserResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized - invalid or missing token",
+  })
+  getProfile(@CurrentUser() user: User) {
+    const { password: _password, ...userWithoutPassword } = user;
+    return successResponse(
+      userWithoutPassword,
+      "Profile retrieved successfully",
+      HttpStatus.OK,
+    );
   }
 }
