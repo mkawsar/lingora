@@ -25,7 +25,13 @@
     "migration:create": "typeorm-ts-node-commonjs migration:create",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/data-source.ts",
-    "generate:jwt-secret": "node scripts/generate-jwt-secret.js"
+    "generate:jwt-secret": "node scripts/generate-jwt-secret.js",
+    "docker:up": "docker compose up -d",
+    "docker:up:build": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f app",
+    "docker:db": "docker compose up -d postgres",
+    "docker:clean": "docker compose down -v --rmi local"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

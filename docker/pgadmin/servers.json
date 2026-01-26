@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Lingora PostgreSQL",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "lingora",
+      "Username": "postgres",
+      "SSLMode": "prefer",
+      "PassFile": "/pgpass"
+    }
+  }
+}

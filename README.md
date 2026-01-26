@@ -13,113 +13,57 @@ A NestJS application with PostgreSQL database, TypeORM, and UUID-based primary k
 ## 📋 Prerequisites
 
 - Node.js (LTS version - v20 or higher recommended)
-- PostgreSQL (v12 or higher)
+- PostgreSQL (v12 or higher) - or use Docker
 - npm or yarn
+- Docker & Docker Compose (optional, for containerized setup)
 
-## 🛠️ Installation
+## 🐳 Docker Setup (Recommended)
 
-1. Clone the repository:
+The easiest way to get started is using Docker, which handles all dependencies including PostgreSQL.
+
+### Quick Start with Docker
+
 ```bash
+# 1. Clone and enter the project
 git clone <repository-url>
 cd lingora
+
+# 2. Start the application with Docker
+npm run docker:up
 ```
 
-2. Install dependencies:
-```bash
-npm install
+The application will be available at `http://localhost:3000`
+
+### Services
+
+- **app** - NestJS application (port 3000)
+- **postgres** - PostgreSQL database (port 5433)
+- **pgadmin** - Database GUI (port 5050, optional)
+
+### Using pgAdmin (Optional)
+Access pgAdmin at `http://localhost:5050` with:
+- Email: `admin@lingora.com` (or value of `PGADMIN_EMAIL`)
+- Password: `admin` (or value of `PGADMIN_PASSWORD`)
+
+### Docker Architecture
+
 ```
-
-3. Create a `.env` file from the example:
-```bash
-cp .env.example .env
+┌─────────────────────────────────────────────────────┐
+│                  Docker Network                      │
+│                                                     │
+│  ┌───────────────┐          ┌──────────────────┐   │
+│  │   lingora-app │          │ lingora-postgres │   │
+│  │   (NestJS)    │─────────▶│   (PostgreSQL)   │   │
+│  │   Port: 3000  │          │   Port: 5432     │   │
+│  └───────────────┘          └──────────────────┘   │
+│                                      │              │
+│                                      ▼              │
+│                             ┌──────────────────┐   │
+│                             │   postgres-data  │   │
+│                             │    (Volume)      │   │
+│                             └──────────────────┘   │
+└─────────────────────────────────────────────────────┘
 ```
-
-Or create it manually with:
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=postgres
-DB_NAME=lingora
-
-# JWT Configuration
-JWT_SECRET=your-jwt-secret-key-here
-JWT_EXPIRES_IN=7d
-
-# Application
-NODE_ENV=development
-```
-
-4. Generate and automatically update JWT secret:
-```bash
-npm run generate:jwt-secret
-```
-
-This command will:
-- Generate a cryptographically secure random 512-bit secret
-- **Automatically update** the `JWT_SECRET` in your `.env` file
-- Create `.env` file if it doesn't exist
-- Add `JWT_EXPIRES_IN=7d` if not present
-
-**Note:** The script will update existing `JWT_SECRET` or add it if missing.
-
-**Alternative methods to generate JWT_SECRET (manual):**
-```bash
-# Using Node.js (one-liner) - requires manual copy to .env
-node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-
-# Using OpenSSL - requires manual copy to .env
-openssl rand -hex 64
-```
-
-5. Create the PostgreSQL database:
-```sql
-CREATE DATABASE lingora;
-```
-
-## 🗄️ Database Setup
-
-This project uses **TypeORM migrations** for database schema management. Auto-sync is **disabled** to ensure controlled and versioned database changes.
-
-### Generate Migration
-
-After creating or modifying entities, generate a migration:
-
-```bash
-npm run migration:generate -- src/database/migration/CreateUserTable
-```
-
-This command:
-- Compares your entities with the current database state
-- Generates a migration file in `src/database/migration/`
-- Includes all SQL needed to create/update tables
-
-### Run Migrations
-
-Apply migrations to your database:
-
-```bash
-npm run migration:run
-```
-
-### Revert Migration
-
-To undo the last migration:
-
-```bash
-npm run migration:revert
-```
-
-### Create Empty Migration
-
-To create a manual migration file:
-
-```bash
-npm run migration:create -- src/database/migration/MigrationName
-```
-
-> **Note**: See [MIGRATIONS.md](./MIGRATIONS.md) for detailed migration documentation.
 
 ## 🏃 Running the Application
 
@@ -138,13 +82,6 @@ Once the application is running, you can access the Swagger UI at:
 ```
 http://localhost:3000/api/docs
 ```
-
-The Swagger documentation provides:
-- Interactive API explorer
-- Request/response schemas
-- Try-it-out functionality
-- API endpoint descriptions
-
 ### Production Mode
 
 ```bash
@@ -452,7 +389,3 @@ Path aliases are configured in `tsconfig.json`:
 3. Generate migrations if you modified entities
 4. Run tests
 5. Submit a pull request
-
-## 📄 License
-
-UNLICENSED
