@@ -35,14 +35,11 @@ COPY . .
 # Copy .env.example to .env
 RUN cp .env.example .env
 
-# Copy entrypoint script
-COPY docker/entrypoint.sh ./
-
 # Expose the application port
 EXPOSE 3000
 
 # Entrypoint for JWT secret generation and migrations
-ENTRYPOINT ["sh", "entrypoint.sh"]
+ENTRYPOINT ["sh", "docker/entrypoint.sh"]
 
 # Start the application in development mode
 CMD ["npm", "run", "start:dev"]

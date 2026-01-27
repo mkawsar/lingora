@@ -33,6 +33,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create a new user",
@@ -55,6 +57,8 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "Get all users",
     description: "Returns a list of all users",
@@ -71,6 +75,8 @@ export class UsersController {
   }
 
   @Get(":id")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "Get user by ID",
     description: "Returns a single user by UUID",
@@ -93,6 +99,8 @@ export class UsersController {
   }
 
   @Patch(":id")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "Update user",
     description: "Updates user information by UUID",
@@ -117,6 +125,8 @@ export class UsersController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: "Delete user",
@@ -131,26 +141,5 @@ export class UsersController {
   @ApiResponse({ status: 404, description: "User not found" })
   remove(@Param("id") id: string) {
     return this.usersService.remove(id);
-  }
-
-  @Get("profile/me")
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: "Get current user profile",
-    description:
-      "Returns the authenticated user's profile (requires JWT token)",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "User profile retrieved successfully",
-    type: UserResponseDto,
-  })
-  @ApiResponse({
-    status: 401,
-    description: "Unauthorized - invalid or missing token",
-  })
-  getProfile(@Request() req: { user: UserResponseDto }) {
-    return successResponse(req.user, "Profile retrieved successfully");
   }
 }
